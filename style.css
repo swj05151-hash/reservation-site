@@ -1,0 +1,28 @@
+body {
+  font-family: Arial;
+  text-align: center;
+}
+
+#schedule {
+  display: grid;
+  grid-template-columns: 120px repeat(4, 1fr);
+  gap: 4px;
+  margin: 20px;
+}
+
+.cell {
+  border: 1px solid #ccc;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.time {
+  background: #eee;
+  font-weight: bold;
+}
+
+.booked {
+  background: gray;
+  opacity: 0.5; /* 흐리게 */
+  cursor: not-allowed;
+}
