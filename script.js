@@ -110,7 +110,7 @@ async function bookTime(day, time) {
 
   // 이미 예약됐는지 확인
   const { data } = await client
-    .from("reservations")
+    .from("time-reservations")
     .select("*")
     .eq("day", day)
     .eq("time", time);
@@ -121,7 +121,7 @@ async function bookTime(day, time) {
   }
 
   // 예약 저장
-  await client.from("reservations").insert([{ day, time, name }]);
+  await client.from("time-reservations").insert([{ day, time, name }]);
 }
 
 
@@ -129,7 +129,7 @@ async function bookTime(day, time) {
 // 🔄 6. 예약 상태 불러오기
 // ================================
 async function loadReservations() {
-  const { data } = await client.from("reservations").select("*");
+  const { data } = await client.from("time-reservations").select("*");
 
   // 모든 셀 가져오기
   const cells = document.querySelectorAll(".cell");
@@ -155,9 +155,9 @@ async function loadReservations() {
 // ⚡ 7. 실시간 반영
 // ================================
 client
-  .channel("realtime reservations")
+  .channel("realtime time-reservations")
   .on("postgres_changes",
-      { event: "*", schema: "public", table: "reservations" },
+      { event: "*", schema: "public", table: "time-reservations" },
       () => loadReservations())
   .subscribe();
 
