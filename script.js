@@ -1,11 +1,10 @@
 // ================================
-// 🔥 1. Supabase 연결
+// 🔥 1. Supabase 연결 (수정본)
 // ================================
-const SUPABASE_URL = "https://znsulkjzlxfybbofrefr.supabase.co".trim();
-const SUPABASE_KEY = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpuc3Vsa2p6bHhmeWJib2ZyZWZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3MjI0NjMsImV4cCI6MjA4NjI5ODQ2M30.Dn-FZaWHMbudELxuFZuRbV24-cpgftsBh2YiyTS-CYY.trim()`;
+const SUPABASE_URL = "https://znsulkjzlxfybbofrefr.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpuc3Vsa2p6bHhmeWJib2ZyZWZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3MjI0NjMsImV4cCI6MjA4NjI5ODQ2M30.Dn-FZaWHMbudELxuFZuRbV24-cpgftsBh2YiyTS-CYY";
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// 테이블 이름 (한 번만 바꾸면 전체 적용됨)
 const TABLE = "time-reservation";
 
 
@@ -135,21 +134,20 @@ client
 
 
 // ================================
-// 👑 8. 관리자 모드 (삭제 기능 포함)
+// 👑 8. 관리자 모드 (삭제 기능 수정본)
 // ================================
 document.getElementById("adminBtn").onclick = async () => {
-
   const code = prompt("관리자 코드 입력");
   if (code !== "5179") return;
 
-  const { data } = await client.from(TABLE).select("*");
+  const { data, error: selectError } = await client.from(TABLE).select("*");
+  if (selectError) return alert("데이터를 불러오지 못했습니다: " + selectError.message);
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     alert("예약이 없습니다.");
     return;
   }
 
-  // 예약 목록 문자열 만들기
   let msg = "삭제할 번호를 입력하세요:\n\n";
   data.forEach((r, i) => {
     msg += `${i}: ${r.day} ${r.time} - ${r.name}\n`;
@@ -161,10 +159,17 @@ document.getElementById("adminBtn").onclick = async () => {
   const target = data[index];
   if (!target) return alert("번호가 잘못됨");
 
-  // 해당 예약 삭제
-  await client.from(TABLE).delete().eq("id", target.id);
+  // 삭제 실행 (id 또는 날짜/시간 기준)
+  const { error: deleteError } = await client.from(TABLE)
+    .delete()
+    .match({ day: target.day, time: target.time, name: target.name });
 
-  alert("삭제 완료");
+  if (deleteError) {
+    alert("삭제 실패: " + deleteError.message);
+  } else {
+    alert("삭제 완료!");
+    loadReservations(); // 화면 즉시 갱신
+  }
 };
 
 
