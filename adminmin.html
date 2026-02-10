@@ -2,37 +2,45 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>예약 관리 시스템 - 관리자</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>예약 관리자 대시보드</title>
   <link rel="stylesheet" href="style.css" />
   <style>
     /* 관리자 페이지 전용 스타일 */
-    table { width: 90%; margin: 20px auto; border-collapse: collapse; }
+    .admin-container { max-width: 800px; margin: 20px auto; padding: 20px; text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
     th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
-    th { background-color: #f4f4f4; }
-    tr:hover { background-color: #f9f9f9; }
-    .del-btn { background-color: #ff4d4d; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
+    th { background-color: #007bff; color: white; }
+    tr:nth-child(even) { background-color: #f2f2f2; }
+    tr:hover { background-color: #e9ecef; }
+    .del-btn { background-color: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; font-weight: bold; }
     .del-btn:hover { background-color: #cc0000; }
+    .nav-btns { margin-bottom: 20px; display: flex; justify-content: space-between; }
   </style>
 </head>
 <body>
-  <h1>👑 예약 통합 관리 대시보드</h1>
-  <div style="margin-bottom: 20px;">
-    <button onclick="location.href='index.html'">메인으로 이동</button>
-    <button onclick="fetchAdminData()">새로고침</button>
-  </div>
+  <div class="admin-container">
+    <h1>👑 예약 통합 관리자</h1>
+    
+    <div class="nav-btns">
+      <button onclick="location.href='index.html'">◀ 메인으로 이동</button>
+      <button onclick="fetchAdminData()" style="background-color: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">🔄 새로고침</button>
+    </div>
 
-  <table id="admin-table">
-    <thead>
-      <tr>
-        <th>요일</th>
-        <th>시간</th>
-        <th>예약자명</th>
-        <th>관리</th>
-      </tr>
-    </thead>
-    <tbody id="admin-body">
+    <table>
+      <thead>
+        <tr>
+          <th>요일</th>
+          <th>시간</th>
+          <th>예약자</th>
+          <th>관리</th>
+        </tr>
+      </thead>
+      <tbody id="admin-body">
+        <tr><td colspan="4">데이터를 불러오는 중...</td></tr>
       </tbody>
-  </table>
+    </table>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script src="admin.js"></script>
