@@ -126,17 +126,19 @@ client
   .subscribe();
 
 // ================================
-// 👑 8. 관리자 모드 (삭제 기능 보강)
+// 👑 8. 관리자 모드 (보안 강화 버전)
 // ================================
 document.getElementById("adminBtn").onclick = async () => {
   const code = prompt("관리자 코드 입력");
-  if (code !== "5179") return;
+  if (code !== "5179") return; // 클라이언트 1차 차단
 
   const { data } = await client.from(TABLE).select("*");
   if (!data || data.length === 0) return alert("예약이 없습니다.");
 
   let msg = "삭제할 번호를 입력하세요:\n\n";
-  data.forEach((r, i) => { msg += `${i}: ${r.day} ${r.time} - ${r.name}\n`; });
+  data.forEach((r, i) => {
+    msg += `${i}: ${r.day} ${r.time} - ${r.name}\n`;
+  });
 
   const index = prompt(msg);
   if (index === null) return;
@@ -144,11 +146,15 @@ document.getElementById("adminBtn").onclick = async () => {
   const target = data[index];
   if (!target) return alert("번호가 잘못됨");
 
-  // 삭제 시 데이터 일치를 위해 match 사용
-  const { error: deleteError } = await client.from(TABLE).delete().match({ day: target.day, time: target.time, name: target.name });
+  // 헤더에 관리자 코드를 실어서 전송 (DB 정책과 일치해야 함)
+  const { error: deleteError } = await client
+    .from(TABLE)
+    .delete()
+    .match({ day: target.day, time: target.time, name: target.name })
+    .setHeader("x-admin-code", code); // 여기에 코드를 실어 보냅니다.
 
   if (deleteError) {
-    alert("삭제 실패: " + deleteError.message);
+    alert("삭제 권한이 없거나 오류가 발생했습니다: " + deleteError.message);
   } else {
     alert("삭제 완료");
     loadReservations();
@@ -157,4 +163,5 @@ document.getElementById("adminBtn").onclick = async () => {
 
 // 시작
 createTable();
+
 loadReservations();
