@@ -163,5 +163,4 @@ document.getElementById("adminBtn").onclick = async () => {
 
 // 시작
 createTable();
-
 loadReservations();
