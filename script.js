@@ -161,15 +161,11 @@ document.getElementById("adminBtn").onclick = async () => {
   const target = data[index];
   if (!target) return alert("번호가 잘못됨");
 
-// 해당 예약 삭제 부분 찾아보기
-const { error } = await client.from(TABLE).delete().eq("id", target.id);
+  // 해당 예약 삭제
+  await client.from(TABLE).delete().eq("id", target.id);
 
-if (error) {
-  alert("삭제 실패: " + error.message);
-  console.error("삭제 에러 상세:", error);
-} else {
   alert("삭제 완료");
-}
+};
 
 
 // ================================
