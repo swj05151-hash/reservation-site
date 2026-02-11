@@ -21,7 +21,7 @@ async function fetchAdminData() {
 
     // 2. 정렬 로직 (요일이 "월요일" 형식인 경우 예시)
     // 만약 DB에 "월"이라고 저장되어 있다면 아래 글자들에서 "요일"을 지우세요!
-    const dayOrder = { "월요일": 1, "화요일": 2, "수요일": 3, "목요일": 4, "금요일": 5, "토요일": 6, "일요일": 7 };
+    const dayOrder = { "월": 1, "화": 2, "수": 3, "목": 4, "금": 5, "토": 6, "일": 7 };
 
     data.sort((a, b) => {
       const orderA = dayOrder[a.day] || 99; // 목록에 없는 요일은 뒤로 보냄
@@ -104,4 +104,5 @@ if (adminCode === "5179") {
   alert("코드가 틀렸습니다.");
   location.href = "index.html";
 }
+
 
