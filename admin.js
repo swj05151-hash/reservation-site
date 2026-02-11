@@ -11,7 +11,6 @@ async function fetchAdminData() {
 
     try {
         const { data, error } = await client.from(TABLE).select("*");
-
         if (error) throw error;
 
         if (!data || data.length === 0) {
@@ -19,10 +18,10 @@ async function fetchAdminData() {
             return;
         }
 
-        // 요일 정렬 순서 ("월" 형식에 맞춤)
+        // 요일 정렬 순서 ("월" 형식)
         const dayOrder = { "월": 1, "화": 2, "수": 3, "목": 4, "금": 5, "토": 6, "일": 7 };
 
-        // 자바스크립트 정렬
+        // 자바스크립트 정렬 (요일 -> 시간 순)
         data.sort((a, b) => {
             const orderA = dayOrder[a.day] || 99;
             const orderB = dayOrder[b.day] || 99;
@@ -50,7 +49,6 @@ async function fetchAdminData() {
             tr.querySelector("td:last-child").appendChild(delBtn);
             tbody.appendChild(tr);
         });
-
     } catch (err) {
         console.error("로딩 에러:", err);
         tbody.innerHTML = `<tr><td colspan="4" style="color:red;">오류 발생: ${err.message}</td></tr>`;
@@ -60,12 +58,7 @@ async function fetchAdminData() {
 // 3. 삭제 로직
 async function deleteEntry(id, name) {
     if (!confirm(`${name}님의 예약을 삭제하시겠습니까?`)) return;
-
-    const { error } = await client
-        .from(TABLE)
-        .delete()
-        .eq('id', id);
-
+    const { error } = await client.from(TABLE).delete().eq('id', id);
     if (error) {
         alert("삭제 실패: " + error.message);
     } else {
