@@ -8,26 +8,54 @@ const TABLE = "time-reservation";
 async function fetchAdminData() {
   const tbody = document.getElementById("admin-body");
   
-  // Supabase에서 요일(day), 시간(time) 순으로 정렬해서 가져오기
-  const { data, error } = await client
-    .from(TABLE)
-    .select("*")
-    .order('day', { ascending: true }) 
-    .order('time', { ascending: true });
+  try {
+    // 1. 데이터 가져오기
+    const { data, error } = await client.from(TABLE).select("*");
 
-  if (error) {
-    console.error("연동 에러:", error.message);
-    tbody.innerHTML = `<tr><td colspan="4" style="color:red;">오류 발생: ${error.message}</td></tr>`;
-    return;
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      tbody.innerHTML = "<tr><td colspan='4'>예약 내역이 없습니다.</td></tr>";
+      return;
+    }
+
+    // 2. 정렬 로직 (요일이 "월요일" 형식인 경우 예시)
+    // 만약 DB에 "월"이라고 저장되어 있다면 아래 글자들에서 "요일"을 지우세요!
+    const dayOrder = { "월요일": 1, "화요일": 2, "수요일": 3, "목요일": 4, "금요일": 5, "토요일": 6, "일요일": 7 };
+
+    data.sort((a, b) => {
+      const orderA = dayOrder[a.day] || 99; // 목록에 없는 요일은 뒤로 보냄
+      const orderB = dayOrder[b.day] || 99;
+      
+      if (orderA !== orderB) return orderA - orderB; // 요일 정렬
+      return a.time.localeCompare(b.time); // 시간 정렬
+    });
+
+    // 3. 화면에 출력
+    tbody.innerHTML = "";
+    data.forEach(row => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${row.day}</td>
+        <td>${row.time}</td>
+        <td><strong>${row.name}</strong></td>
+        <td></td>
+      `;
+
+      const delBtn = document.createElement("button");
+      delBtn.innerText = "삭제";
+      delBtn.className = "del-btn";
+      delBtn.onclick = () => deleteEntry(row.id, row.name);
+
+      tr.querySelector("td:last-child").appendChild(delBtn);
+      tbody.appendChild(tr);
+    });
+
+  } catch (err) {
+    console.error("로딩 에러:", err);
+    tbody.innerHTML = `<tr><td colspan="4" style="color:red;">오류: ${err.message}</td></tr>`;
   }
-
-  tbody.innerHTML = ""; // 기존 목록 초기화
-
-  if (!data || data.length === 0) {
-    tbody.innerHTML = "<tr><td colspan="4">예약 내역이 없습니다.</td></tr>";
-    return;
-  }
-
+}
   // 3. 데이터를 표에 뿌려주기
   data.forEach(row => {
     const tr = document.createElement("tr");
@@ -76,3 +104,4 @@ if (adminCode === "5179") {
   alert("코드가 틀렸습니다.");
   location.href = "index.html";
 }
+
