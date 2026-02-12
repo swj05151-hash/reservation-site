@@ -41,18 +41,28 @@ const times = generateTimes();
 // ================================
 function createTable() {
   scheduleDiv.innerHTML = "";
+  
+  // 첫 줄 (헤더): "시간" 칸 + 요일들
   scheduleDiv.appendChild(makeCell("시간", "time"));
   days.forEach(day => scheduleDiv.appendChild(makeCell(day, "time")));
 
+  // 시간대별 행 생성
   times.forEach(time => {
+    // 왼쪽 시간 표시 칸
     scheduleDiv.appendChild(makeCell(time, "time"));
+    
+    // 각 요일별 예약 칸
     days.forEach(day => {
       const cell = makeCell("", "cell");
-      if (time >= "12:30" && time < "13:30") {
-        cell.classList.add("booked");
+      
+      // 📍 점심시간 체크: 12:30과 13:00를 선택 불가하게 만듭니다.
+      if (time === "12:30" || time === "13:00") {
+        cell.classList.add("booked"); // 불투명하거나 선택 안 되는 스타일 적용
+        cell.innerText = "점심";      // (선택사항) 칸에 '점심'이라고 표시
       } else {
         cell.onclick = () => bookTime(day, time);
       }
+      
       cell.dataset.day = day;
       cell.dataset.time = time;
       scheduleDiv.appendChild(cell);
@@ -126,4 +136,5 @@ client
   .subscribe();
 // 시작
 createTable();
+
 loadReservations();
